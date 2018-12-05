@@ -5,3 +5,8 @@ This is used for booking.
 1. Add this folder to PATH
 2. Ensure the chromedriver is compatible with your chrome
 
+TODO:
+1. continuous time with discontinuous field
+2. how to generate targets:
+    * generate all permutations and filter
+    * load status of fields and generate available permutations
