@@ -33,8 +33,8 @@ class GymBook:
         
         self.driver = Browser(driver_name=self.driver_name, executable_path=self.driver_path)
         self.driver.driver.set_window_size(1400, 1000)
-        #self.start_time = datetime.datetime.strptime(date+' 08:00:00', '%Y-%m-%d %H:%M:%S') - datetime.timedelta(days=3)
-        self.start_time = datetime.datetime.now() + datetime.timedelta(seconds=30) 
+        self.start_time = datetime.datetime.strptime(date+' 08:00:00', '%Y-%m-%d %H:%M:%S') - datetime.timedelta(days=3)
+        #self.start_time = datetime.datetime.now() + datetime.timedelta(seconds=30) 
     
     def __read_id(self, filepath):
         f=open(filepath,'r')
@@ -95,7 +95,6 @@ class GymBook:
                 box = iframe.find_by_id('resourceTd_' + resource_id).first
                 style = box._element.get_attribute('style')
                 if  style is not None and style == "background: gray;":
-                    print('not available now, continue to sleep for fresh_interval %ds'%self.fresh_interval)
                     return False
             return True
 
@@ -106,6 +105,7 @@ class GymBook:
         self.driver.visit(self.book_url % self.date)
         # loop untils gray to yellow
         while not self.probe():
+            print('approaching but not available now, continue to sleep for fresh_interval %ds'%self.fresh_interval)
             sleep(self.fresh_interval)
             self.driver.reload()
         # start booking now 
@@ -188,10 +188,10 @@ class GymBook:
         
 if __name__=='__main__':
     id_priority = [10,9,8,7,6,5,4,3,2,1,11,12]
-    #time_priority = ['21:00-22:00', '20:00-21:00']
-    time_priority = ['12:00-13:00','11:30-12:00']
+    time_priority = ['21:00-22:00', '20:00-21:00']
+    #time_priority = ['12:00-13:00','11:30-12:00']
     desire_hours = 2 
-    date = "2018-12-11"
+    date = "2018-12-12"
     gb = GymBook('id_resource', id_priority, time_priority, desire_hours, date)
     gb.connect_net()
     gb.run()
