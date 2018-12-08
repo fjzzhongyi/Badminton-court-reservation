@@ -33,8 +33,8 @@ class GymBook:
         
         self.driver = Browser(driver_name=self.driver_name, executable_path=self.driver_path)
         self.driver.driver.set_window_size(1400, 1000)
-        self.start_time = datetime.datetime.strptime(date+' 08:00:00', '%Y-%m-%d %H:%M:%S') - datetime.timedelta(days=3)
-        #self.start_time = datetime.datetime.now() + datetime.timedelta(seconds=30) 
+        #self.start_time = datetime.datetime.strptime(date+' 08:00:00', '%Y-%m-%d %H:%M:%S') - datetime.timedelta(days=3)
+        self.start_time = datetime.datetime.now() + datetime.timedelta(seconds=30) 
     
     def __read_id(self, filepath):
         f=open(filepath,'r')
@@ -88,6 +88,8 @@ class GymBook:
         # probe (6:30-8:00, 01) 5500347 and (13:00-14:00, 07) 4045872
         # if grey: False, haven't started
         # else: ready, True
+        if self.driver.is_element_not_present_by_name('overlayView'):
+            return False
         with self.driver.get_iframe('overlayView') as iframe:
             for resource_id in ['5500347','4045872']:
                 box = iframe.find_by_id('resourceTd_' + resource_id).first
@@ -107,6 +109,7 @@ class GymBook:
             sleep(self.fresh_interval)
             self.driver.reload()
         # start booking now 
+        print('go into booking procedure')
         begin_time = datetime.datetime.now()
         while booked is False:
             for target in targets:
@@ -125,6 +128,8 @@ class GymBook:
                 if filtered:
                     print('failed to book %s, for reason: occupied.'%str(target))
                     continue
+                else:
+                    print('%s is available, try to lock.'%str(target))
                 try:
                     #money = re.search(r'\d+', self.driver.find_by_id('yyPullRight').value).group(0)
                     #if not(int(money) == 20 * self.desire_hours):
@@ -186,7 +191,7 @@ if __name__=='__main__':
     #time_priority = ['21:00-22:00', '20:00-21:00']
     time_priority = ['12:00-13:00','11:30-12:00']
     desire_hours = 2 
-    date = "2018-12-10"
+    date = "2018-12-11"
     gb = GymBook('id_resource', id_priority, time_priority, desire_hours, date)
     gb.connect_net()
     gb.run()
