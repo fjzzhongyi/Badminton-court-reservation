@@ -112,6 +112,8 @@ class GymBook:
         print('go into booking procedure')
         begin_time = datetime.datetime.now()
         while booked is False:
+            if booked:
+                return True
             for target in targets:
                 filtered = False
                 with self.driver.get_iframe('overlayView') as iframe:
@@ -159,7 +161,7 @@ class GymBook:
 
                     end_time = datetime.datetime.now()
                     duration = end_time - begin_time
-                    print('book for hour: success, cost: %d days %d seconds and %d us'%(duration.days, duration.seconds, duration.microseconds))
+                    print('book for designated hours: success, time consumed: %d days %d seconds and %d us'%(duration.days, duration.seconds, duration.microseconds))
                     booked = True
                     self.driver.fill('xm',u'黄宏毅')
                     self.driver.fill('dept',u'交叉信息研究院')
@@ -184,7 +186,9 @@ class GymBook:
         self.connect_net()
         self.login()
         # start booking
-        self.book()
+        if self.book():
+            print('HAPPY!^-^')
+
         
 if __name__=='__main__':
     id_priority = [10,9,8,7,6,5,4,3,2,1,11,12]
