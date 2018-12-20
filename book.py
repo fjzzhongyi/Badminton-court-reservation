@@ -17,7 +17,7 @@ class GymBook:
     idlist = {} # format: {'19:00-20:00':{1: 4000102}}
     fresh_interval = 0.1
     sleep_interval = 5 
-    threshold = 12
+    threshold = 15
     network_interval = 60
     
     def __init__(self, resourcepath, id_priority, time_priority, desire_hours, date):
@@ -191,11 +191,11 @@ class GymBook:
 
         
 if __name__=='__main__':
-    id_priority = [10,9,8,7,6,5,4,3,2,1,11,12]
+    id_priority = [9,8,7,6,5,4,3,2,1,11,12,10]
     time_priority = ['21:00-22:00', '20:00-21:00']
     #time_priority = ['12:00-13:00','11:30-12:00']
     desire_hours = 2 
-    date = "2018-12-12"
+    date = "2018-12-23"
     gb = GymBook('id_resource', id_priority, time_priority, desire_hours, date)
     gb.connect_net()
     gb.run()
