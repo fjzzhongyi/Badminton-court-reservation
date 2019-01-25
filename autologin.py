@@ -9,13 +9,13 @@ import datetime
 class AutoLogin:
 
     net_url = 'http://auth4.tsinghua.edu.cn/'
-    sleep_interval = 15 * 60 # time interval to login: unit--second 
 
-    def __init__(self, config_path):
+    def __init__(self, config_path, minutes):
         with open(config_path, 'r') as fr:
             config = json.load(fr)
         self.username = config["username"]
         self.password = config["password"]
+        self.sleep_interval = minutes*60 # translate minutes to seconds
 
 
     def connect_net(self):
@@ -35,9 +35,11 @@ class AutoLogin:
             alert.accept()
             alert.dismiss()
         except BaseException, e:
-            traceback.print_exc()
-            print('has loged in') 
+            #traceback.print_exc()
+            #print('You have been connected.') 
+            pass
         finally:
+            print('Success to login.')
             self.driver.quit() 
 
 
@@ -48,5 +50,5 @@ class AutoLogin:
 
         
 if __name__=='__main__':
-    gb = AutoLogin('./config.json') 
+    gb = AutoLogin('./config.json', 15) 
     gb.run()

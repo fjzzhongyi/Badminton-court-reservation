@@ -1,3 +1,5 @@
-pip install splinter
-# fill the config file with your username and password
-chromedriver can be downloaded online
+1. Use following cmd to install splinter
+'pip install splinter'
+2. Copy the configuration file by 'cp CONFIG_EXAMPLE.json config.json'
+   and fill the config file with your username and password, keep this private
+3. Use chromedriver in this folder. If this dismatches your chrome browser, download it online by yourself.
