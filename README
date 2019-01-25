@@ -1,0 +1,3 @@
+pip install splinter
+# fill the config file with your username and password
+chromedriver can be downloaded online
