@@ -35,7 +35,7 @@ class GymBook:
     net_url = 'http://net.tsinghua.edu.cn/wired'
     username = '2017311691'
     username2 = 'hhy17'
-    password = 'Hhy123456'
+    password = 'hhy123456'
     idlist = {}  # format: {'19:00-20:00':{1: 4000102}}
     fresh_interval = 0.1
     sleep_interval = 5
@@ -57,6 +57,9 @@ class GymBook:
         self.driver.driver.set_window_size(1400, 1000)
         self.start_time = datetime.datetime.strptime(date + ' 08:00:00', '%Y-%m-%d %H:%M:%S') - datetime.timedelta(
             days=3)
+        if self.start_time <= datetime.datetime.now():
+            print('You have missed the chance! (Start time has gone!)')
+            sys.exit(0)
         # self.start_time = datetime.datetime.now() + datetime.timedelta(seconds=30)
 
     def __is_window_on(func):
@@ -249,7 +252,7 @@ if __name__ == '__main__':
     # time_priority = ['21:00-22:00', '20:00-21:00']
     time_priority = ['19:00-20:00', '20:00-21:00']
     desire_hours = 2
-    date = "2019-03-10"
+    date = "2019-03-24"
     gb = GymBook('id_resource', id_priority, time_priority, desire_hours, date)
     # gb.connect_net()
     gb.run()
