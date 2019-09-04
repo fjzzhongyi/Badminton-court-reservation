@@ -10,10 +10,10 @@ class GymBook:
 
     login_url = 'http://50.tsinghua.edu.cn/'
     book_url = 'http://50.tsinghua.edu.cn/gymbook/gymBookAction.do?ms=viewGymBook&gymnasium_id=3998000&item_id=4045681&time_date=%s&userType=&viewType=m'
-    net_url = 'http://net.tsinghua.edu.cn/wired'
+    net_url = 'http://auth4.tsinghua.edu.cn'
     username = '2017311691'
     username2 = 'hhy17'
-    password = 'Hhy123456'
+    password = 'hhy123456'
     idlist = {} # format: {'19:00-20:00':{1: 4000102}}
     fresh_interval = 0.1
     sleep_interval = 5 
@@ -65,8 +65,8 @@ class GymBook:
     def connect_net(self):
         self.driver.visit(self.net_url)
         try:
-            self.driver.fill('uname', self.username2)
-            self.driver.fill('pass', self.password)
+            self.driver.fill('username', self.username2)
+            self.driver.fill('password', self.password)
             self.driver.find_by_id('connect').click()
             sleep(1)
             # race condition: may conflict with other orders
@@ -192,10 +192,10 @@ class GymBook:
         
 if __name__=='__main__':
     id_priority = [9,8,7,6,5,4,3,2,1,11,12,10]
-    time_priority = ['21:00-22:00', '20:00-21:00']
+    time_priority = ['15:00-16:00', '16:00-17:00']
     #time_priority = ['12:00-13:00','11:30-12:00']
     desire_hours = 2 
-    date = "2018-12-23"
+    date = "2019-09-07"
     gb = GymBook('id_resource', id_priority, time_priority, desire_hours, date)
     gb.connect_net()
     gb.run()
