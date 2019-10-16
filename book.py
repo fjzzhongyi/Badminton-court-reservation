@@ -58,8 +58,8 @@ class GymBook:
         self.start_time = datetime.datetime.strptime(date + ' 08:00:00', '%Y-%m-%d %H:%M:%S') - datetime.timedelta(
             days=3)
         if self.start_time <= datetime.datetime.now():
-            print('You have missed the chance! (Start time has gone!)')
-            sys.exit(0)
+            print('You have missed the first-time chance! (Start time has gone!)')
+            # sys.exit(0)
         # self.start_time = datetime.datetime.now() + datetime.timedelta(seconds=30)
 
     def __is_window_on(func):
@@ -126,17 +126,17 @@ class GymBook:
 
     def __probe(self):
         # probe (6:30-8:00, 01) 5500347 and (13:00-14:00, 07) 4045872
-        # if grey: False, haven't started
-        # else: ready, True
+        # if all styles are in grey: False, haven't started
+        # else if any one is not in grey: ready, True
         if self.driver.is_element_not_present_by_name('overlayView'):
             return False
         with self.driver.get_iframe('overlayView') as iframe:
             for resource_id in ['5500347', '4045872']:
                 box = iframe.find_by_id('resourceTd_' + resource_id).first
                 style = box._element.get_attribute('style')
-                if style is not None and style == "background: gray;":
-                    return False
-            return True
+                if style is not None and style != "background: gray;":
+                    return True 
+            return False 
 
     @__is_window_on
     def book(self):
@@ -172,8 +172,11 @@ class GymBook:
                     continue
                 else:
                     with self.driver.get_iframe('overlayView') as iframe:
+                        box_list = []
                         for resource_id in target:
                             box = iframe.find_by_id('resourceTd_' + resource_id).first
+                            box_list.append(box)
+                        for box in box_list:
                             box.click()
                     print('%s is available, try to lock.' % str(target))
                 try:
@@ -249,7 +252,7 @@ if __name__ == '__main__':
     require_net_login = False
     id_priority = [9, 8, 7, 6, 5, 4, 3, 2, 1, 11, 12, 10]
     # time_priority = ['21:00-22:00', '20:00-21:00']
-    time_priority = ['19:00-20:00', '20:00-21:00']
+    time_priority = ['14:00-15:00', '15:00-16:00']
     desire_hours = 2
     date = "2019-03-24"
     gb = GymBook('id_resource', id_priority, time_priority, desire_hours, date)
