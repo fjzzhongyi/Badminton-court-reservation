@@ -1,14 +1,14 @@
 **Introduction**
-This is used for booking.
+
+   This project is used for booking fields.
 
 **Requirements**
-1. Add this folder to PATH (it seems unessential)
-2. Ensure the chromedriver is compatible with your chrome
-3. pip install splinter
+1. add this folder to `PATH` (it seems unessential)
+2. ensure the `chromedriver` you download is compatible with your chrome app
+3. install python package `splinter` (installation is compulsory)
+4. fill in necessary information in `config.json`
+5. never remove `id_resource` file
 
-TODO:
-1. continuous time with discontinuous field
-2. how to generate targets:
-    * generate all permutations and filter
-    * load status of fields and generate available permutations
-3. headless(no GUI) operations
+
+**TODO**
+1. headless(no GUI) operations

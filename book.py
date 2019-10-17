@@ -9,8 +9,15 @@ from time import sleep
 import json, re, traceback
 import datetime
 
+configs = {}
+with open("config.json", 'r') as f:
+    configs = json.load(f)
 
-# import requests
+
+id_priority = configs["id_priority"]
+time_priority = configs["time_priority"]
+date = configs["date"]
+
 
 def judge_connect(func):
     def wrapper(*args, **kwargs):
@@ -32,24 +39,24 @@ def judge_connect(func):
 class GymBook:
     login_url = 'http://50.tsinghua.edu.cn/'
     book_url = 'http://50.tsinghua.edu.cn/gymbook/gymBookAction.do?ms=viewGymBook&gymnasium_id=3998000&item_id=4045681&time_date=%s&userType=&viewType=m'
-    net_url = 'http://auth4.tsinghua.edu.cn'
-    username = '2017311691'
-    username2 = 'hhy17'
-    password = 'hhy123456'
+    global configs
+    net_url = configs["net_url"]
+    username = configs["50_username"]
+    username2 = configs["net_username"]
+    password = configs["password"]
     idlist = {} # format: {'19:00-20:00':{1: 4000102}}
     fresh_interval = 0.1
     sleep_interval = 5
     threshold = 15
     network_interval = 60
 
-    def __init__(self, resourcepath, id_priority, time_priority, desire_hours, date):
+    def __init__(self, resourcepath, id_priority, time_priority, date):
         assert len(id_priority) == 12
-        assert len(time_priority) >= desire_hours
+        # assert len(time_priority) >= desire_hours
         self.driver_name = 'chrome'
         self.driver_path = os.getcwd() + '/chromedriver'
         self.id_priority = id_priority
         self.time_priority = time_priority
-        self.desire_hours = desire_hours  # 1/2 hours
         self.date = date
         self.sourcepath = resourcepath
         # if set headless=True, meaning no GUI
@@ -86,18 +93,55 @@ class GymBook:
                 else:
                     self.idlist[duration] = {int(field): resource_id}
 
+    # fetch_targets calculates all prioritized field_id combinations
     def fetch_targets(self):
+        def generate_targets(source_list, duration):
+            targets = []
+
+            def generate_iterations(depth, prefix=[]):
+                for item in source_list:
+                    if depth == 1:
+                        targets.append(prefix + [item])
+                    else:
+                        generate_iterations(depth - 1, prefix + [item])
+
+            def compare(x: list):
+                weight = 0
+                for item in x:
+                    weight += source_list.index(item)
+                # return weight + np.std(x) * 1e-10 # prioritize groups that have similar group members, but it's too slow
+                return weight
+            generate_iterations(duration)
+            targets.sort(key=compare)
+            return targets
+
+        def transform(source_list, time_list, id_list):
+            target_list = []
+            for combination in source_list:
+                target = [id_list[time_list[index]][combination[index]] for index in range(len(combination))]
+                target_list.append(target)
+            return target_list
+
         self.__read_id(self.sourcepath)
         targets = []
-        for start in range(len(time_priority) - self.desire_hours + 1):
-            target_hours = time_priority[start: start + self.desire_hours]
-            for field in self.id_priority:
-                target = []
-                for hour in target_hours:
-                    target.append(self.idlist[hour][field])
-                targets.append(target)
-        assert len(targets) == (len(self.time_priority) - self.desire_hours + 1) * len(self.id_priority)
+        for time_set in self.time_priority:
+            field_targets = generate_targets(self.id_priority, len(time_set))
+            print(field_targets)
+            id_targets = transform(field_targets, time_set, self.idlist)
+            targets += id_targets
+        print(len(targets))
         return targets
+        # targets = []
+        # for start in range(len(time_priority) - self.desire_hours + 1):
+        #     target_hours = time_priority[start: start + self.desire_hours]
+        #     for field in self.id_priority:
+        #         target = []
+        #         for hour in target_hours:
+        #             target.append(self.idlist[hour][field])
+        #         targets.append(target)
+        # assert len(targets) == (len(self.time_priority) - self.desire_hours + 1) * len(self.id_priority)
+        # return targets
+
 
     @judge_connect
     @__is_window_on
@@ -153,8 +197,6 @@ class GymBook:
         print('go into booking procedure')
         begin_time = datetime.datetime.now()
         while booked is False:
-            if booked:
-                return True
             for target in targets:
                 filtered = False
                 with self.driver.get_iframe('overlayView') as iframe:
@@ -229,6 +271,11 @@ class GymBook:
                     # self.driver.reload()
                     self.driver.visit(self.book_url % self.date)
                     continue
+            if booked:
+                return True
+            else:
+                print("Fail to book: no free fields satisfying requirements!")
+                return False
 
     def run(self):
         now = datetime.datetime.now()
@@ -249,12 +296,7 @@ class GymBook:
 
 if __name__ == '__main__':
     global require_net_login
-    require_net_login = False
-    id_priority = [9, 8, 7, 6, 5, 4, 3, 2, 1, 11, 12, 10]
-    # time_priority = ['21:00-22:00', '20:00-21:00']
-    time_priority = ['14:00-15:00', '15:00-16:00']
-    desire_hours = 2
-    date = "2019-03-24"
-    gb = GymBook('id_resource', id_priority, time_priority, desire_hours, date)
+    require_net_login = configs["require_net_login"]
+    gb = GymBook('id_resource', id_priority, time_priority, date)
     # gb.connect_net()
     gb.run()
