@@ -18,8 +18,11 @@
     10
   ],
   "time_priority": [
-    ["6:30-8:00", "8:00-9:00"]
+    ["11:30-12:00", "12:00-13:00"]
   ],
-  "date": "2019-10-18",
-  "require_net_login": false
+  "date": "2019-10-25",
+  "require_net_login": false,
+  "name": "黄宏毅",
+  "dept": "研究生院",
+  "phone": "13070119837"
 }

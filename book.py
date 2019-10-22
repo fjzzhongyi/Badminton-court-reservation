@@ -44,6 +44,9 @@ class GymBook:
     username = configs["50_username"]
     username2 = configs["net_username"]
     password = configs["password"]
+    phone_jq = configs["phone"]
+    name = configs["name"]
+    dept = configs["dept"]
     idlist = {} # format: {'19:00-20:00':{1: 4000102}}
     fresh_interval = 0.1
     sleep_interval = 5
@@ -261,8 +264,9 @@ class GymBook:
                     print('book for designated hours: success, time consumed: %d days %d seconds and %d us' % (
                         duration.days, duration.seconds, duration.microseconds))
                     booked = True
-                    self.driver.fill('xm', u'黄宏毅')
-                    self.driver.fill('dept', u'交叉信息研究院')
+                    self.driver.fill('xm', configs["name"])
+                    self.driver.fill('dept', configs["dept"])
+                    # os.system("pause")
                     self.driver.find_by_id('payLater').click()
                     break
                 except BaseException as e:

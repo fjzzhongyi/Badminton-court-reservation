@@ -719,3 +719,50 @@ resourceArray.push({id:'4046000',time_session:'21:00-22:00',field_name:'羽11',o
 resourceArray.push({id:'4046028',time_session:'21:00-22:00',field_name:'羽12',overlaySize:'2',can_net_book:'1'});
 
 
+		resourceArray.push({id:'4045700',time_session:'11:00-11:30',field_name:'羽01',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045728',time_session:'11:00-11:30',field_name:'羽02',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045756',time_session:'11:00-11:30',field_name:'羽03',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045784',time_session:'11:00-11:30',field_name:'羽04',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045812',time_session:'11:00-11:30',field_name:'羽05',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045840',time_session:'11:00-11:30',field_name:'羽06',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045868',time_session:'11:00-11:30',field_name:'羽07',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045896',time_session:'11:00-11:30',field_name:'羽08',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045924',time_session:'11:00-11:30',field_name:'羽09',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045952',time_session:'11:00-11:30',field_name:'羽10',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045980',time_session:'11:00-11:30',field_name:'羽11',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4046008',time_session:'11:00-11:30',field_name:'羽12',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045701',time_session:'11:30-12:00',field_name:'羽01',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045729',time_session:'11:30-12:00',field_name:'羽02',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045757',time_session:'11:30-12:00',field_name:'羽03',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045785',time_session:'11:30-12:00',field_name:'羽04',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045813',time_session:'11:30-12:00',field_name:'羽05',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045841',time_session:'11:30-12:00',field_name:'羽06',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045869',time_session:'11:30-12:00',field_name:'羽07',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045897',time_session:'11:30-12:00',field_name:'羽08',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045925',time_session:'11:30-12:00',field_name:'羽09',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045953',time_session:'11:30-12:00',field_name:'羽10',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4045981',time_session:'11:30-12:00',field_name:'羽11',overlaySize:'1',can_net_book:'1'});
+		
+		resourceArray.push({id:'4046009',time_session:'11:30-12:00',field_name:'羽12',overlaySize:'1',can_net_book:'1'});
