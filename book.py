@@ -37,8 +37,8 @@ def judge_connect(func):
 
 
 class GymBook:
-    login_url = 'http://50.tsinghua.edu.cn/'
-    book_url = 'http://50.tsinghua.edu.cn/gymbook/gymBookAction.do?ms=viewGymBook&gymnasium_id=3998000&item_id=4045681&time_date=%s&userType=&viewType=m'
+    login_url = "http://50.tsinghua.edu.cn/login_m.jsp"
+    book_url = "http://50.tsinghua.edu.cn/gymbook/gymBookAction.do?ms=viewGymBook&gymnasium_id=3998000&item_id=4045681&time_date=%s&userType=&viewType=m"
     global configs
     net_url = configs["net_url"]
     username = configs["50_username"]
@@ -166,7 +166,7 @@ class GymBook:
     @__is_window_on
     def login(self):
         self.driver.visit(self.login_url)
-        self.driver.find_by_text(u'预约场地').click()
+        #self.driver.find_by_text(u'预约场地').click()
         self.driver.fill('un', self.username)
         self.driver.fill('pw', self.password)
         self.driver.find_by_value(u"登录").click()
