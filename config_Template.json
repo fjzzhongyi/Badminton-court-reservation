@@ -1,0 +1,28 @@
+{
+  "net_url": "http://auth4.tsinghua.edu.cn",
+  "50_username": "YOUR ID",
+  "net_username": "YOUR USERNAME",
+  "password": "YOUR PASSWORD",
+  "id_priority": [
+    9,
+    8,
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1,
+    11,
+    12,
+    10
+  ],
+  "time_priority": [
+    ["11:30-12:00", "12:00-13:00"]
+  ],
+  "date": "2019-12-12",
+  "require_net_login": false,
+  "name": "YOUR NAME",
+  "dept": "YOUR DEPARTMENT",
+  "phone": "YOUR PHONE NUMBER"
+}
