@@ -10,7 +10,7 @@ import json, re, traceback
 import datetime
 
 configs = {}
-with open("config.json", 'r') as f:
+with open("config.json", 'r', encoding="utf-8") as f:
     configs = json.load(f)
 
 
@@ -84,7 +84,7 @@ class GymBook:
         return wrapper
 
     def __read_id(self, filepath):
-        f = open(filepath, 'r')
+        f = open(filepath, 'r', encoding="utf-8")
         s = f.readlines()
         for entry in s:
             if re.match(r'\s*resourceArray.push\(.*\).*', entry):
