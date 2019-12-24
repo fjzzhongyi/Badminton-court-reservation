@@ -245,6 +245,10 @@ class GymBook:
                         self.driver.find_by_id('popupLogin-screen').click()
                     except BaseException as e:
                         pass
+                    # self.driver.find_by_name("selectPayWay").first.find_by_id("selectPayWay0").first.check()
+                    # self.driver.click_by_id
+                    # self.driver.check("        现场支付")
+                    # self.driver.check("selectPayWay")
                     self.driver.find_by_id('payWayConfirm').first.click()
 
                     try:

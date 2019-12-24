@@ -12,3 +12,4 @@
 
 **TODO**
 1. headless(no GUI) operations
+2. can choose pay for the order later instead of right-now
