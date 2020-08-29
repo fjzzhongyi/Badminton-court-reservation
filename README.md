@@ -7,7 +7,6 @@
 2. ensure the `chromedriver` you download is compatible with your chrome app
 3. install python package `splinter` (installation is compulsory)
 4. fill in necessary information in `config.json`
-5. never remove `id_resource` file
 
 
 **TODO**
