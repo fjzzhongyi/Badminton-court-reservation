@@ -2,7 +2,7 @@
   "net_url": "http://auth4.tsinghua.edu.cn",
   "50_username": "2017311691",
   "net_username": "hhy17",
-  "password": "hhy123456",
+  "password": "Hhy123456",
   "id_priority": [
     9,
     8,
@@ -18,9 +18,9 @@
     10
   ],
   "time_priority": [
-    ["11:30-12:00", "12:00-13:00"]
+    ["17:00-18:00", "18:00-19:00"]
   ],
-  "date": "2019-10-25",
+  "date": "2020-09-01",
   "require_net_login": false,
   "name": "黄宏毅",
   "dept": "研究生院",

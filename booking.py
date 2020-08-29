@@ -8,6 +8,7 @@ import os, time, sys
 from time import sleep
 import json, re, traceback
 import datetime
+import requests
 
 configs = {}
 with open("config.json", 'r', encoding="utf-8") as f:
@@ -83,7 +84,8 @@ class GymBook:
             func(*args, **kwargs)
         return wrapper
 
-    def __read_id(self, filepath):
+    #deprecated
+    def __read_id_offline(self, filepath):
         f = open(filepath, 'r', encoding="utf-8")
         s = f.readlines()
         for entry in s:
@@ -96,6 +98,19 @@ class GymBook:
                 else:
                     self.idlist[duration] = {int(field): resource_id}
 
+    def __read_id_online(self, filepath):
+        url = "http://50.tsinghua.edu.cn/gymsite/cacheAction.do?ms=viewBook&gymnasium_id=3998000&item_id=4045681&time_date=%s&userType=1" %(date)
+        res = requests.get(url)
+        for entry in res.text.split("\n"):
+            if re.match(r'\s*resourceArray.push\(.*\).*', entry):
+                resource_id = re.search(r'\d{7}', entry).group(0)
+                duration = re.search(r'[\d:-]{9,11}', entry).group(0)
+                field = re.search(r'羽(?P<n1>\d*)', entry).groups(0)[0]
+                if duration in self.idlist:
+                    self.idlist[duration][int(field)] = resource_id
+                else:
+                    self.idlist[duration] = {int(field): resource_id}
+    
     # fetch_targets calculates all prioritized field_id combinations
     def fetch_targets(self):
         def generate_targets(source_list, duration):
@@ -125,7 +140,7 @@ class GymBook:
                 target_list.append(target)
             return target_list
 
-        self.__read_id(self.sourcepath)
+        self.__read_id_online(self.sourcepath)
         targets = []
         for time_set in self.time_priority:
             field_targets = generate_targets(self.id_priority, len(time_set))
@@ -172,14 +187,15 @@ class GymBook:
         self.driver.find_by_value(u"登录").click()
 
     def __probe(self):
-        # probe (6:30-8:00, 01) 5500347 and (13:00-14:00, 07) 4045872
+        # probe two fields: 8:00-9:00 field 3;  15:00-16:00 field 9
         # if all styles are in grey: False, haven't started
         # else if any one is not in grey: ready, True
         if self.driver.is_element_not_present_by_name('overlayView'):
             return False
+        probes = [("8:00-9:00", 3), ("15:00-16:00", 9)]
         with self.driver.get_iframe('overlayView') as iframe:
-            for resource_id in ['5500347', '4045872']:
-                box = iframe.find_by_id('resourceTd_' + resource_id).first
+            for (duration, field) in probes:
+                box = iframe.find_by_id("resourceTd_%s" % self.idlist[duration][field]).first
                 style = box._element.get_attribute('style')
                 if style is not None and style != "background: gray;":
                     return True 
