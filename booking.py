@@ -187,12 +187,12 @@ class GymBook:
         self.driver.find_by_value(u"登录").click()
 
     def __probe(self):
-        # probe two fields: 8:00-9:00 field 3;  15:00-16:00 field 9
+        # probe one field: priority time duration + field id
         # if all styles are in grey: False, haven't started
         # else if any one is not in grey: ready, True
         if self.driver.is_element_not_present_by_name('overlayView'):
             return False
-        probes = [("8:00-9:00", 3), ("15:00-16:00", 9)]
+        probes = [(self.time_priority[0][0], self.id_priority[0])]
         with self.driver.get_iframe('overlayView') as iframe:
             for (duration, field) in probes:
                 box = iframe.find_by_id("resourceTd_%s" % self.idlist[duration][field]).first
