@@ -78,7 +78,7 @@ class GymBook:
             assert len(args) > 0
             try:
                 args[0].driver.visit(r"about:blank")
-            except selenium.common.exceptions.NoSuchWindowException as e:
+            except (selenium.common.exceptions.NoSuchWindowException, selenium.common.exceptions.WebDriverException) as e:
                 args[0].driver = Browser(driver_name=args[0].driver_name, executable_path=args[0].driver_path, headless=False)
                 args[0].driver.driver.set_window_size(1400, 1000)
             func(*args, **kwargs)
@@ -312,7 +312,7 @@ class GymBook:
             left = (self.start_time - now).total_seconds()
 
         # ready for booking: ensure network ok
-        self.connect_net()
+        # self.connect_net()
         self.login()
         # start booking
         if self.book():
