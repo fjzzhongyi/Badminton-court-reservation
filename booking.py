@@ -19,6 +19,15 @@ id_priority = configs["id_priority"]
 time_priority = configs["time_priority"]
 date = configs["date"]
 
+log_file = "./result.log"
+def log(info):
+    print(info)
+    if not os.path.exists(log_file):
+        with open(log_file, "w"):
+            pass
+    with open(log_file, "a+") as fw:
+        fw.write(str(datetime.datetime.now()) + ":  " + info + "\n")
+
 
 def judge_connect(func):
     def wrapper(*args, **kwargs):
@@ -229,7 +238,7 @@ class GymBook:
                                 filtered = True
                                 break
                 if filtered:
-                    print('failed to book %s, for reason: occupied.' % str(target))
+                    log('failed to book %s, for reason: occupied.' % str(target))
                     continue
                 else:
                     with self.driver.get_iframe('overlayView') as iframe:
@@ -239,7 +248,7 @@ class GymBook:
                             box_list.append(box)
                         for box in box_list:
                             box.click()
-                    print('%s is available, try to lock.' % str(target))
+                    log('%s is available, try to lock.' % str(target))
                 try:
                     # money = re.search(r'\d+', self.driver.find_by_id('yyPullRight').value).group(0)
                     # if not(int(money) == 20 * self.desire_hours):
@@ -281,7 +290,7 @@ class GymBook:
 
                     end_time = datetime.datetime.now()
                     duration = end_time - begin_time
-                    print('book for designated hours: success, time consumed: %d days %d seconds and %d us' % (
+                    log('book for designated hours: success, time consumed: %d days %d seconds and %d us' % (
                         duration.days, duration.seconds, duration.microseconds))
                     booked = True
                     self.driver.fill('xm', configs["name"])
@@ -290,7 +299,7 @@ class GymBook:
                     self.driver.find_by_id('payLater').click()
                     break
                 except BaseException as e:
-                    print('try with resource_id: %s failed' % (str(target)))
+                    log('try with resource_id: %s failed' % (str(target)))
                     traceback.print_exc()
                     # self.driver.reload()
                     self.driver.visit(self.book_url % self.date)
@@ -298,7 +307,7 @@ class GymBook:
             if booked:
                 return True
             else:
-                print("Fail to book: no free fields satisfying requirements!")
+                log("Fail to book: no free fields satisfying requirements!")
                 return False
 
     def run(self):
