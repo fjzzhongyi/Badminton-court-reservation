@@ -1,0 +1,5 @@
+chromedriver
+config.json
+test.py
+scratch.py
+*.log

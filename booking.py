@@ -58,7 +58,7 @@ class GymBook:
     name = configs["name"]
     dept = configs["dept"]
     idlist = {} # format: {'19:00-20:00':{1: 4000102}}
-    fresh_interval = 0.1
+    fresh_interval = 0.08
     sleep_interval = 5
     threshold = 15
     network_interval = 60
@@ -81,6 +81,7 @@ class GymBook:
             print('You have missed the first-time chance! (Start time has gone!)')
             # sys.exit(0)
         # self.start_time = datetime.datetime.now() + datetime.timedelta(seconds=30)
+        self.durations = set() 
 
     def __is_window_on(func):
         def wrapper(*args, **kwargs):
@@ -106,6 +107,7 @@ class GymBook:
                     self.idlist[duration][int(field)] = resource_id
                 else:
                     self.idlist[duration] = {int(field): resource_id}
+                self.durations.add(duration)
 
     def __read_id_online(self, filepath):
         url = "http://50.tsinghua.edu.cn/gymsite/cacheAction.do?ms=viewBook&gymnasium_id=3998000&item_id=4045681&time_date=%s&userType=1" %(date)
@@ -148,9 +150,21 @@ class GymBook:
                 target = [id_list[time_list[index]][combination[index]] for index in range(len(combination))]
                 target_list.append(target)
             return target_list
+        
+        def check_time_exist():
+            for time_set in self.time_priority:
+                for time_iter in time_set:
+                    if time_iter not in self.durations:
+                        print(time_set, "doesn't comply with real time slot, so this slot will be omitted.")
+                        self.time_priority.remove(time_set)
+                        break
+
+            
 
         self.__read_id_online(self.sourcepath)
         targets = []
+        # remove invaid time period 
+        check_time_exist()
         for time_set in self.time_priority:
             field_targets = generate_targets(self.id_priority, len(time_set))
             print(field_targets)
