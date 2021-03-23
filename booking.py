@@ -10,14 +10,11 @@ import json, re, traceback
 import datetime
 import requests
 
-configs = {}
-with open("config.json", 'r', encoding="utf-8") as f:
-    configs = json.load(f)
 
+# For first time, you should assign specific path of chromedriver and configuration file 
 
-id_priority = configs["id_priority"]
-time_priority = configs["time_priority"]
-date = configs["date"]
+config_path = "/home/hhy/Desktop/booking/config.json"
+chrome_path = '/home/hhy/Desktop/booking/chromedriver'
 
 log_file = "./result.log"
 def log(info):
@@ -49,36 +46,42 @@ def judge_connect(func):
 class GymBook:
     login_url = "http://50.tsinghua.edu.cn/login_m.jsp"
     book_url = "http://50.tsinghua.edu.cn/gymbook/gymBookAction.do?ms=viewGymBook&gymnasium_id=3998000&item_id=4045681&time_date=%s&userType=&viewType=m"
-    global configs
-    net_url = configs["net_url"]
-    username = configs["50_username"]
-    username2 = configs["net_username"]
-    password = configs["password"]
-    phone_jq = configs["phone"]
-    name = configs["name"]
-    dept = configs["dept"]
+    
     idlist = {} # format: {'19:00-20:00':{1: 4000102}}
-    fresh_interval = 0.08
+    fresh_interval = 0.03
     sleep_interval = 5
     threshold = 15
     network_interval = 60
+    book_start_time = "08:00:00"
 
-    def __init__(self, resourcepath, id_priority, time_priority, date):
-        assert len(id_priority) == 12
+    def __init__(self, resourcepath, configs):
         # assert len(time_priority) >= desire_hours
         self.driver_name = 'chrome'
-        self.driver_path = os.getcwd() + '/chromedriver'
-        self.id_priority = id_priority
-        self.time_priority = time_priority
-        self.date = date
+        self.driver_path = chrome_path 
+        
+        self.id_priority = configs["id_priority"]
+        assert len(self.id_priority) == 12
+        self.time_priority = configs["time_priority"]
+        self.date = configs["date"]
+        self.net_url = configs["net_url"]
+        self.username = configs["50_username"]
+        self.username2 = configs["net_username"]
+        self.password = configs["password"]
+        self.phone_jq = configs["phone"]
+        self.name = configs["name"]
+        self.dept = configs["dept"]
+        
         self.sourcepath = resourcepath
         # if set headless=True, meaning no GUI
-        self.driver = Browser(driver_name=self.driver_name, executable_path=self.driver_path, headless=False)
-        self.driver.driver.set_window_size(1400, 1000)
-        self.start_time = datetime.datetime.strptime(date + ' 08:00:00', '%Y-%m-%d %H:%M:%S') - datetime.timedelta(
+        
+        # self.driver = Browser(driver_name=self.driver_name, executable_path=self.driver_path, headless=False)
+        # self.driver.driver.set_window_size(1400, 1000)
+        self.driver = None
+        
+        self.start_time = datetime.datetime.strptime(self.date + ' ' + self.book_start_time, '%Y-%m-%d %H:%M:%S') - datetime.timedelta(
             days=3)
         if self.start_time <= datetime.datetime.now():
-            print('You have missed the first-time chance! (Start time has gone!)')
+            log('You have missed the first-time chance! (Start time has gone!)')
             # sys.exit(0)
         # self.start_time = datetime.datetime.now() + datetime.timedelta(seconds=30)
         self.durations = set() 
@@ -88,29 +91,30 @@ class GymBook:
             assert len(args) > 0
             try:
                 args[0].driver.visit(r"about:blank")
-            except (selenium.common.exceptions.NoSuchWindowException, selenium.common.exceptions.WebDriverException) as e:
-                args[0].driver = Browser(driver_name=args[0].driver_name, executable_path=args[0].driver_path, headless=False)
+            except (AttributeError, selenium.common.exceptions.NoSuchWindowException, selenium.common.exceptions.WebDriverException) as e:
+                args[0].driver = Browser(driver_name=args[0].driver_name, executable_path=args[0].driver_path, headless=True)
                 args[0].driver.driver.set_window_size(1400, 1000)
             func(*args, **kwargs)
         return wrapper
 
     #deprecated
-    def __read_id_offline(self, filepath):
-        f = open(filepath, 'r', encoding="utf-8")
-        s = f.readlines()
-        for entry in s:
-            if re.match(r'\s*resourceArray.push\(.*\).*', entry):
-                resource_id = re.search(r'\d{7}', entry).group(0)
-                duration = re.search(r'[\d:-]{9,11}', entry).group(0)
-                field = re.search(r'羽(?P<n1>\d*)', entry).groups(0)[0]
-                if duration in self.idlist:
-                    self.idlist[duration][int(field)] = resource_id
-                else:
-                    self.idlist[duration] = {int(field): resource_id}
-                self.durations.add(duration)
+    #def __read_id_offline(self, filepath):
+    #    f = open(filepath, 'r', encoding="utf-8")
+    #    s = f.readlines()
+    #    for entry in s:
+    #        if re.match(r'\s*resourceArray.push\(.*\).*', entry):
+    #            resource_id = re.search(r'\d{7}', entry).group(0)
+    #            duration = re.search(r'[\d:-]{9,11}', entry).group(0)
+    #            field = re.search(r'羽(?P<n1>\d*)', entry).groups(0)[0]
+    #            if duration in self.idlist:
+    #                self.idlist[duration][int(field)] = resource_id
+    #            else:
+    #                self.idlist[duration] = {int(field): resource_id}
+    #            self.durations.add(duration)
+    #    print(self.durations)
 
     def __read_id_online(self, filepath):
-        url = "http://50.tsinghua.edu.cn/gymsite/cacheAction.do?ms=viewBook&gymnasium_id=3998000&item_id=4045681&time_date=%s&userType=1" %(date)
+        url = "http://50.tsinghua.edu.cn/gymsite/cacheAction.do?ms=viewBook&gymnasium_id=3998000&item_id=4045681&time_date=%s&userType=1" %(self.date)
         res = requests.get(url)
         for entry in res.text.split("\n"):
             if re.match(r'\s*resourceArray.push\(.*\).*', entry):
@@ -121,6 +125,7 @@ class GymBook:
                     self.idlist[duration][int(field)] = resource_id
                 else:
                     self.idlist[duration] = {int(field): resource_id}
+                self.durations.add(duration)
     
     # fetch_targets calculates all prioritized field_id combinations
     def fetch_targets(self):
@@ -134,7 +139,7 @@ class GymBook:
                     else:
                         generate_iterations(depth - 1, prefix + [item])
 
-            def compare(x: list):
+            def compare(x):
                 weight = 0
                 for item in x:
                     weight += source_list.index(item)
@@ -152,12 +157,18 @@ class GymBook:
             return target_list
         
         def check_time_exist():
+            new_time_priority = []
             for time_set in self.time_priority:
+                to_remove = False
                 for time_iter in time_set:
                     if time_iter not in self.durations:
-                        print(time_set, "doesn't comply with real time slot, so this slot will be omitted.")
-                        self.time_priority.remove(time_set)
+                        log(str(time_set) + " doesn't comply with real time slot, so this slot will be omitted.")
+                        to_remove = True
                         break
+                if not to_remove:
+                    new_time_priority.append(time_set)
+            self.time_priority = new_time_priority
+
 
             
 
@@ -167,10 +178,10 @@ class GymBook:
         check_time_exist()
         for time_set in self.time_priority:
             field_targets = generate_targets(self.id_priority, len(time_set))
-            print(field_targets)
+            # print("Target fields: ", field_targets)
             id_targets = transform(field_targets, time_set, self.idlist)
             targets += id_targets
-        print(len(targets))
+        # print(len(targets))
         return targets
         # targets = []
         # for start in range(len(time_priority) - self.desire_hours + 1):
@@ -236,7 +247,7 @@ class GymBook:
             sleep(self.fresh_interval)
             self.driver.reload()
         # start booking now 
-        print('go into booking procedure')
+        log('Go into booking procedure')
         begin_time = datetime.datetime.now()
         while booked is False:
             for target in targets:
@@ -304,11 +315,11 @@ class GymBook:
 
                     end_time = datetime.datetime.now()
                     duration = end_time - begin_time
-                    log('book for designated hours: success, time consumed: %d days %d seconds and %d us' % (
-                        duration.days, duration.seconds, duration.microseconds))
+                    log('book for designated hours in date %s : success, time consumed: %d days %d seconds and %d us' % (
+                        self.date, duration.days, duration.seconds, duration.microseconds))
                     booked = True
-                    self.driver.fill('xm', configs["name"])
-                    self.driver.fill('dept', configs["dept"])
+                    self.driver.fill('xm', self.name)
+                    self.driver.fill('dept', self.dept)
                     # os.system("pause")
                     self.driver.find_by_id('payLater').click()
                     break
@@ -316,8 +327,9 @@ class GymBook:
                     log('try with resource_id: %s failed' % (str(target)))
                     traceback.print_exc()
                     # self.driver.reload()
-                    self.driver.visit(self.book_url % self.date)
-                    continue
+                    if booked is not True:
+                        self.driver.visit(self.book_url % self.date)
+                        continue
             if booked:
                 return True
             else:
@@ -326,6 +338,14 @@ class GymBook:
 
     def run(self):
         now = datetime.datetime.now()
+
+        # check if time has passed
+
+        book_date = datetime.datetime.strptime(self.date + ' ' + self.book_start_time, '%Y-%m-%d %H:%M:%S')
+        if book_date < now:
+            log("Date to book has passed!!! -- so stop!")
+            return 
+
         left = (self.start_time - now).total_seconds()
         while left > self.threshold:
             print('long time from start, time now is %s, %f seconds remains, to sleep for %ds' % (
@@ -339,11 +359,18 @@ class GymBook:
         self.login()
         # start booking
         if self.book():
-            print('HAPPY!^-^')
+            log('Success. HAPPY!^-^')
 
 if __name__ == '__main__':
+    log("\nStart a new task!")
+
+    configs = {}
+    with open(config_path, 'r', encoding="utf-8") as f:
+        configs = json.load(f)
+    
     global require_net_login
     require_net_login = configs["require_net_login"]
-    gb = GymBook('id_resource', id_priority, time_priority, date)
+
+    gb = GymBook('id_resource', configs)
     # gb.connect_net()
     gb.run()
